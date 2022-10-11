@@ -1,6 +1,5 @@
 import React, { useState, SetStateAction, useContext } from "react";
 import { Card, Box, CardContent, Typography, Button, Checkbox, TextField } from "@mui/material";
-import { Delete } from "@mui/icons-material/";
 import { InventoryContext } from "../pages/Home";
 import Book from "../Interfaces/Book";
 import "../styles/Books.css";
@@ -14,7 +13,6 @@ function BookCard(props: {
 	};
 }) {
 	const {
-		inventory,
 		inventoryMap,
 		setInventory,
 	}: {
@@ -24,7 +22,6 @@ function BookCard(props: {
 	} = useContext(InventoryContext);
 	const { book, setIsBookDescriptionModalOpen, setCurrentBook, showInventory } = props.props;
 	const [isSelected, setIsSelected] = useState<boolean>(false);
-	const [isDeleted, setIsDeleted] = useState<boolean>(false);
 	const [isBookPresent, setIsBookPresent] = useState<boolean>(
 		Object.hasOwn(inventoryMap, book.googleBookID)
 	);
@@ -43,9 +40,7 @@ function BookCard(props: {
 					height: "fit-content",
 					minHeight: "350px",
 					marginLeft: "10px",
-					border: isDeleted
-						? "2px solid red"
-						: Object.hasOwn(inventoryMap, book.googleBookID)
+					border: Object.hasOwn(inventoryMap, book.googleBookID)
 						? "2px solid gold" // eslint-disable-line
 						: "", // eslint-disable-line
 				}}
