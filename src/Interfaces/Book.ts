@@ -5,6 +5,7 @@ interface Book {
 	title: string;
 	authors: string[];
 	thumbnail: string;
+	description: string;
 }
 
 export default Book;

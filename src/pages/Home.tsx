@@ -1,22 +1,30 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, createContext } from "react";
 import { TextField, Switch, Button } from "@mui/material";
 import axios from "../utils/_axios";
 import Book from "../Interfaces/Book";
 import BookCard from "../components/BookCard";
+import BookDescriptionModal from "../components/BookDescriptionModal";
 
-function Home() {
+export const InventoryContext = createContext<{
+	inventory: Book[] | null;
+	setInventory: React.Dispatch<React.SetStateAction<Book[] | null>> | null;
+}>({ inventory: [], setInventory: null });
+
+export function Home() {
 	const [books, setBooks] = useState<Book[] | null>([]);
+	const [currentBook, setCurrentBook] = useState<Book | null>(null);
 	const [showInventory, setShowInventory]: [
 		boolean,
 		React.Dispatch<React.SetStateAction<boolean>>
 	] = useState(false);
-	const [title, setTitle]: [string, React.Dispatch<React.SetStateAction<string>>] = useState("");
-	const [author, setAuthor]: [string, React.Dispatch<React.SetStateAction<string>>] =
-		useState("");
+	const [title, setTitle] = useState<string>("");
+	const [author, setAuthor] = useState<string>("");
+	const [inventory, setInventory] = useState<Book[] | null>([]);
+	const [isBookDescriptionModalOpen, setIsBookDescriptionModalOpen] = useState(false);
 
 	useEffect(() => {
-		console.log(books);
-	}, [books]);
+		console.log(books, inventory);
+	}, [books, inventory]);
 
 	const handleSubmit = async (): Promise<void> => {
 		let queryString: string;
@@ -40,6 +48,7 @@ function Home() {
 							title: book.volumeInfo.title,
 							authors: book.volumeInfo.authors,
 							thumbnail: book.volumeInfo.imageLinks.thumbnail,
+							description: book.volumeInfo.description,
 						},
 					];
 				});
@@ -51,7 +60,7 @@ function Home() {
 	};
 
 	return (
-		<>
+		<InventoryContext.Provider value={{ inventory, setInventory }}>
 			<div
 				style={{
 					display: "flex",
@@ -100,13 +109,33 @@ function Home() {
 				</div>
 			</div>
 			<div style={{ marginTop: "20px" }}>
-				{books?.length !== 0 &&
-					books?.map((book: Book, index: number) => {
-						return <BookCard key={index} props={{ book }} />;
-					})}
+				{books && books?.length !== 0 && (
+					<div style={{ display: "grid", gridTemplateColumns: "auto auto" }}>
+						{books.map((book: Book, index: number) => (
+							<div
+								key={index}
+								style={{
+									marginTop: "10px",
+								}}>
+								<BookCard
+									props={{ book, setIsBookDescriptionModalOpen, setCurrentBook }}
+								/>
+							</div>
+						))}
+					</div>
+				)}
 			</div>
-		</>
+			<div>
+				{currentBook && (
+					<BookDescriptionModal
+						props={{
+							book: currentBook,
+							isBookDescriptionModalOpen,
+							setIsBookDescriptionModalOpen,
+						}}
+					/>
+				)}
+			</div>
+		</InventoryContext.Provider>
 	);
 }
-
-export default Home;

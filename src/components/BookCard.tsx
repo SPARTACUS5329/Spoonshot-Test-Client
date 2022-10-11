@@ -1,9 +1,25 @@
-import React from "react";
-import { Card, Box, CardContent, Typography } from "@mui/material";
+import React, { useState, SetStateAction, useContext } from "react";
+import { Card, Box, CardContent, Typography, Button, Checkbox } from "@mui/material";
+import { InventoryContext } from "../pages/Home";
 import Book from "../Interfaces/Book";
+import "../styles/Books.css";
 
-function BookCard(props: { props: { book: Book } }) {
-	const { book }: { book: Book } = props.props;
+function BookCard(props: {
+	props: {
+		book: Book;
+		setIsBookDescriptionModalOpen: React.Dispatch<SetStateAction<boolean>>;
+		setCurrentBook: React.Dispatch<SetStateAction<Book | null>>;
+	};
+}) {
+	const {
+		inventory,
+		setInventory,
+	}: {
+		inventory: Book[] | null;
+		setInventory: React.Dispatch<SetStateAction<Book[] | null>> | null;
+	} = useContext(InventoryContext);
+	const { book, setIsBookDescriptionModalOpen, setCurrentBook } = props.props;
+	const [isSelected, setIsSelected] = useState<boolean>(false);
 	return (
 		<div
 			style={{
@@ -14,24 +30,59 @@ function BookCard(props: { props: { book: Book } }) {
 			<Card
 				sx={{ display: "flex", boxShadow: 3 }}
 				style={{
-					width: "80vw",
+					width: "40vw",
 					height: "fit-content",
+					minHeight: "350px",
 					marginLeft: "10px",
 				}}
 				variant="outlined">
 				<img
 					src={book.thumbnail}
 					alt="Book Thumbnail"
-					style={{ width: "20%", height: "auto" }}
+					style={{ width: "40%", height: "auto" }}
 				/>
 				<Box sx={{ width: "60%", display: "flex", flexDirection: "column" }}>
 					<CardContent sx={{ flex: "1 0 auto" }}>
-						<Typography style={{ fontWeight: "bold", fontSize: "30px" }}>
-							{book.title}
-						</Typography>
-						<Typography style={{ fontWeight: "bold", fontSize: "25px" }}>
-							{book.authors[0]}
-						</Typography>
+						<Box style={{ display: "flex", justifyContent: "space-between" }}>
+							<Typography style={{ fontWeight: "bold", fontSize: "20px" }}>
+								{book.title}
+							</Typography>
+							<Checkbox
+								checked={isSelected}
+								// eslint-disable-next-line
+								onChange={(e: any) => {
+									if (!isSelected) {
+										setInventory &&
+											setInventory((inventory: Book[] | null) => {
+												if (!inventory) return null;
+												return [...inventory, book];
+											});
+										return setIsSelected(true);
+									}
+									setInventory &&
+										setInventory((inventory: Book[] | null) => {
+											if (!inventory) return null;
+											return [
+												...inventory.filter((BOOK: Book) => {
+													return book.googleBookID !== BOOK.googleBookID;
+												}),
+											];
+										});
+									return setIsSelected(false);
+								}}
+							/>
+						</Box>
+						<Typography style={{ fontSize: "15px" }}>{book.authors[0]}</Typography>
+						<Typography className="description">{book.description}</Typography>
+						<Button
+							style={{ color: "#1d9ccf" }}
+							onClick={(e) => {
+								e.preventDefault();
+								setIsBookDescriptionModalOpen(true);
+								setCurrentBook(book);
+							}}>
+							Show more
+						</Button>
 					</CardContent>
 				</Box>
 			</Card>
