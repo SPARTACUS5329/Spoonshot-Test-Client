@@ -9,6 +9,7 @@ function BookCard(props: {
 		book: Book;
 		setIsBookDescriptionModalOpen: React.Dispatch<SetStateAction<boolean>>;
 		setCurrentBook: React.Dispatch<SetStateAction<Book | null>>;
+		showInventory: boolean;
 	};
 }) {
 	const {
@@ -18,9 +19,9 @@ function BookCard(props: {
 		inventory: Book[] | null;
 		setInventory: React.Dispatch<SetStateAction<Book[] | null>> | null;
 	} = useContext(InventoryContext);
-	const { book, setIsBookDescriptionModalOpen, setCurrentBook } = props.props;
+	const { book, setIsBookDescriptionModalOpen, setCurrentBook, showInventory } = props.props;
 	const [isSelected, setIsSelected] = useState<boolean>(false);
-	const [stock, setStock] = useState<string>("0");
+	const [stock, setStock] = useState<string>(JSON.stringify(book.stock));
 	return (
 		<div
 			style={{
@@ -52,6 +53,7 @@ function BookCard(props: {
 								checked={isSelected}
 								// eslint-disable-next-line
 								onChange={(e: any) => {
+									if (showInventory) return setIsSelected(!isSelected);
 									if (!isSelected) {
 										setInventory &&
 											setInventory((inventory: Book[] | null) => {
@@ -86,10 +88,9 @@ function BookCard(props: {
 						</Button>
 					</CardContent>
 					<TextField
-						label={"Stock(1-100)"}
+						label={"Stock"}
 						value={stock}
 						disabled={!isSelected}
-						error={isSelected && !/^([1-9]|[1-9][0-9]|100)$/.test(stock)}
 						// eslint-disable-next-line
 						onChange={(e: any) => {
 							e.preventDefault();

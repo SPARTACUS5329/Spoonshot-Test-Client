@@ -35,10 +35,6 @@ export function Home() {
 		getInventory();
 	}, []);
 
-	useEffect(() => {
-		console.log(books, inventory);
-	}, [books, inventory]);
-
 	const handleSubmit = async (): Promise<void> => {
 		let queryString: string;
 		if (title + author === "") return;
@@ -85,6 +81,18 @@ export function Home() {
 		}
 	};
 
+	const handleUpdateItems = async () => {
+		try {
+			// eslint-disable-next-line
+			const result: any = await axios.put("/inventory", {
+				inventory,
+			});
+			console.log(result);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
 	return (
 		<InventoryContext.Provider value={{ inventory, setInventory }}>
 			<div
@@ -121,9 +129,16 @@ export function Home() {
 				</div>
 			</div>
 			<div style={{ display: "flex", justifyContent: "center" }}>
-				<Button variant="contained" onClick={handleAddItems}>
-					Add
-				</Button>
+				{showInventory || (
+					<Button variant="contained" onClick={handleAddItems}>
+						Add
+					</Button>
+				)}
+				{showInventory && (
+					<Button variant="contained" onClick={handleUpdateItems}>
+						Update
+					</Button>
+				)}
 				<div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
 					<div>
 						<Switch
@@ -138,7 +153,7 @@ export function Home() {
 				</div>
 			</div>
 			<div style={{ marginTop: "20px" }}>
-				{books && books?.length !== 0 && (
+				{!showInventory && books && books?.length !== 0 && (
 					<div style={{ display: "grid", gridTemplateColumns: "auto auto" }}>
 						{books.map((book: Book, index: number) => (
 							<div
@@ -147,7 +162,34 @@ export function Home() {
 									marginTop: "10px",
 								}}>
 								<BookCard
-									props={{ book, setIsBookDescriptionModalOpen, setCurrentBook }}
+									props={{
+										book,
+										setIsBookDescriptionModalOpen,
+										setCurrentBook,
+										showInventory,
+									}}
+								/>
+							</div>
+						))}
+					</div>
+				)}
+			</div>
+			<div style={{ marginTop: "20px" }}>
+				{showInventory && inventory && inventory?.length !== 0 && (
+					<div style={{ display: "grid", gridTemplateColumns: "auto auto" }}>
+						{inventory.map((book: Book, index: number) => (
+							<div
+								key={index}
+								style={{
+									marginTop: "10px",
+								}}>
+								<BookCard
+									props={{
+										book,
+										setIsBookDescriptionModalOpen,
+										setCurrentBook,
+										showInventory,
+									}}
 								/>
 							</div>
 						))}
