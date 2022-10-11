@@ -23,6 +23,19 @@ export function Home() {
 	const [isBookDescriptionModalOpen, setIsBookDescriptionModalOpen] = useState(false);
 
 	useEffect(() => {
+		const getInventory = async (): Promise<void> => {
+			try {
+				// eslint-disable-next-line
+				const result: any = await axios.get("/inventory");
+				setInventory([...result.data]);
+			} catch (error) {
+				console.error(error);
+			}
+		};
+		getInventory();
+	}, []);
+
+	useEffect(() => {
 		console.log(books, inventory);
 	}, [books, inventory]);
 
@@ -49,11 +62,24 @@ export function Home() {
 							authors: book.volumeInfo.authors,
 							thumbnail: book.volumeInfo.imageLinks.thumbnail,
 							description: book.volumeInfo.description,
+							stock: 0,
 						},
 					];
 				});
 				return temp;
 			});
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+	const handleAddItems = async () => {
+		try {
+			// eslint-disable-next-line
+			const result: any = await axios.post("/inventory", {
+				inventory,
+			});
+			console.log(result);
 		} catch (error) {
 			console.error(error);
 		}
@@ -89,11 +115,14 @@ export function Home() {
 						}}
 						style={{ width: "35vw", marginLeft: "10px" }}
 					/>
+					<Button variant="contained" onClick={handleSubmit}>
+						Search
+					</Button>
 				</div>
 			</div>
 			<div style={{ display: "flex", justifyContent: "center" }}>
-				<Button variant="contained" onClick={handleSubmit}>
-					Search
+				<Button variant="contained" onClick={handleAddItems}>
+					Add
 				</Button>
 				<div style={{ display: "flex", flexDirection: "column", marginLeft: "20px" }}>
 					<div>

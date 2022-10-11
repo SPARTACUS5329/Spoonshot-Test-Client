@@ -1,5 +1,5 @@
 import React, { useState, SetStateAction, useContext } from "react";
-import { Card, Box, CardContent, Typography, Button, Checkbox } from "@mui/material";
+import { Card, Box, CardContent, Typography, Button, Checkbox, TextField } from "@mui/material";
 import { InventoryContext } from "../pages/Home";
 import Book from "../Interfaces/Book";
 import "../styles/Books.css";
@@ -20,6 +20,7 @@ function BookCard(props: {
 	} = useContext(InventoryContext);
 	const { book, setIsBookDescriptionModalOpen, setCurrentBook } = props.props;
 	const [isSelected, setIsSelected] = useState<boolean>(false);
+	const [stock, setStock] = useState<string>("0");
 	return (
 		<div
 			style={{
@@ -84,6 +85,18 @@ function BookCard(props: {
 							Show more
 						</Button>
 					</CardContent>
+					<TextField
+						label={"Stock(1-100)"}
+						value={stock}
+						disabled={!isSelected}
+						error={isSelected && !/^([1-9]|[1-9][0-9]|100)$/.test(stock)}
+						// eslint-disable-next-line
+						onChange={(e: any) => {
+							e.preventDefault();
+							setStock(e.target.value);
+							book.stock = parseInt(e.target.value);
+						}}
+					/>
 				</Box>
 			</Card>
 		</div>

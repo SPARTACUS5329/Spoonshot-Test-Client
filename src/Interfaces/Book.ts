@@ -6,6 +6,7 @@ interface Book {
 	authors: string[];
 	thumbnail: string;
 	description: string;
+	stock: number;
 }
 
 export default Book;
