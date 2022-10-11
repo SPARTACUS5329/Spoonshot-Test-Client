@@ -1,14 +1,6 @@
 import React, { useState, SetStateAction, useContext } from "react";
-import {
-	Card,
-	Box,
-	CardContent,
-	Typography,
-	Button,
-	Checkbox,
-	TextField,
-	Tooltip,
-} from "@mui/material";
+import { Card, Box, CardContent, Typography, Button, Checkbox, TextField } from "@mui/material";
+import { Delete } from "@mui/icons-material/";
 import { InventoryContext } from "../pages/Home";
 import Book from "../Interfaces/Book";
 import "../styles/Books.css";
@@ -32,6 +24,10 @@ function BookCard(props: {
 	} = useContext(InventoryContext);
 	const { book, setIsBookDescriptionModalOpen, setCurrentBook, showInventory } = props.props;
 	const [isSelected, setIsSelected] = useState<boolean>(false);
+	const [isDeleted, setIsDeleted] = useState<boolean>(false);
+	const [isBookPresent, setIsBookPresent] = useState<boolean>(
+		Object.hasOwn(inventoryMap, book.googleBookID)
+	);
 	const [stock, setStock] = useState<string>(JSON.stringify(book.stock));
 	return (
 		<div
@@ -43,11 +39,15 @@ function BookCard(props: {
 			<Card
 				sx={{ display: "flex", boxShadow: 3 }}
 				style={{
-					width: "40vw",
+					width: "45vw",
 					height: "fit-content",
 					minHeight: "350px",
 					marginLeft: "10px",
-					border: Object.hasOwn(inventoryMap, book.googleBookID) ? "2px solid gold" : "",
+					border: isDeleted
+						? "2px solid red"
+						: Object.hasOwn(inventoryMap, book.googleBookID)
+						? "2px solid gold" // eslint-disable-line
+						: "", // eslint-disable-line
 				}}
 				variant="outlined">
 				<img
@@ -70,9 +70,47 @@ function BookCard(props: {
 										setInventory &&
 											setInventory((inventory: Book[] | null) => {
 												if (!inventory) return null;
-												return [...inventory, book];
+												inventory.map((BOOK: Book) => {
+													if (BOOK.googleBookID === book.googleBookID) {
+														BOOK.stock += book.stock;
+													}
+													return BOOK;
+												});
+												return isBookPresent
+													? [...inventory]
+													: [...inventory, book];
 											});
 										return setIsSelected(true);
+									}
+									setInventory &&
+										setInventory((inventory: Book[] | null) => {
+											if (!inventory) return null;
+											return [
+												...inventory.filter((BOOK: Book) => {
+													let isReturnable = false;
+													if (BOOK.googleBookID === book.googleBookID) {
+														if (isBookPresent) {
+															BOOK.stock -= book.stock;
+															isReturnable = true;
+														} else isReturnable = false;
+													}
+													return isReturnable;
+												}),
+											];
+										});
+									return setIsSelected(false);
+								}}
+							/>
+							<Delete
+								onClick={(e) => {
+									e.preventDefault();
+									if (isDeleted) {
+										setInventory &&
+											setInventory((inventory: Book[] | null) => {
+												if (!inventory) return null;
+												return [...inventory, book];
+											});
+										return setIsDeleted(false);
 									}
 									setInventory &&
 										setInventory((inventory: Book[] | null) => {
@@ -83,7 +121,7 @@ function BookCard(props: {
 												}),
 											];
 										});
-									return setIsSelected(false);
+									setIsDeleted(true);
 								}}
 							/>
 						</Box>
@@ -107,7 +145,19 @@ function BookCard(props: {
 						onChange={(e: any) => {
 							e.preventDefault();
 							setStock(e.target.value);
-							book.stock = parseInt(e.target.value);
+							setInventory &&
+								setInventory((inventory: Book[] | null) => {
+									if (!inventory) return null;
+									return [
+										...inventory.map((BOOK: Book) => {
+											if (BOOK.googleBookID === book.googleBookID) {
+												book.stock = parseInt(e.target.value);
+												BOOK.stock = book.stock;
+											}
+											return BOOK;
+										}),
+									];
+								});
 						}}
 					/>
 				</Box>

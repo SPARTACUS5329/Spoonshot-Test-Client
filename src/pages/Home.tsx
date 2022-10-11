@@ -85,11 +85,11 @@ export function Home() {
 
 	const handleAddItems = async () => {
 		try {
+			console.log(inventory);
 			// eslint-disable-next-line
 			const result: any = await axios.post("/inventory", {
 				inventory,
 			});
-			console.log(result);
 		} catch (error) {
 			console.error(error);
 		}
@@ -97,6 +97,7 @@ export function Home() {
 
 	const handleUpdateItems = async () => {
 		try {
+			console.log(inventory);
 			await axios.put("/inventory", {
 				inventory,
 			});
