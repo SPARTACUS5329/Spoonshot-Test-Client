@@ -9,7 +9,7 @@ export const InventoryContext = createContext<{
 	inventory: Book[] | null;
 	setInventory: React.Dispatch<React.SetStateAction<Book[] | null>> | null;
 	inventoryMap: any; // eslint-disable-line
-}>({ inventory: [], setInventory: null });
+}>({ inventory: null, setInventory: null, inventoryMap: {} });
 
 export function Home() {
 	const [books, setBooks] = useState<Book[] | null>([]);
