@@ -9,7 +9,7 @@ function App() {
 		<Router>
 			<Switch>
 				<Route path="/" component={Home} />
-				<Route path="/:rest*" component={NotFound} />
+				<Route path="/:rest*" component={Home} />
 			</Switch>
 		</Router>
 	);
