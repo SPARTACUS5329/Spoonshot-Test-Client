@@ -8,6 +8,7 @@ import BookDescriptionModal from "../components/BookDescriptionModal";
 export const InventoryContext = createContext<{
 	inventory: Book[] | null;
 	setInventory: React.Dispatch<React.SetStateAction<Book[] | null>> | null;
+	inventoryMap: any; // eslint-disable-line
 }>({ inventory: [], setInventory: null });
 
 export function Home() {
@@ -20,6 +21,7 @@ export function Home() {
 	const [title, setTitle] = useState<string>("");
 	const [author, setAuthor] = useState<string>("");
 	const [inventory, setInventory] = useState<Book[] | null>([]);
+	const [inventoryMap, setInventoryMap] = useState<any>(null); // eslint-disable-line
 	const [isBookDescriptionModalOpen, setIsBookDescriptionModalOpen] = useState(false);
 
 	useEffect(() => {
@@ -34,6 +36,18 @@ export function Home() {
 		};
 		getInventory();
 	}, []);
+
+	useEffect(() => {
+		// eslint-disable-next-line
+		setInventoryMap((item: any) => {
+			// eslint-disable-next-line
+			const map: any = {};
+			inventory?.map((book: Book) => {
+				map[book.googleBookID] = book;
+			});
+			return map;
+		});
+	}, [inventory]);
 
 	const handleSubmit = async (): Promise<void> => {
 		let queryString: string;
@@ -83,18 +97,16 @@ export function Home() {
 
 	const handleUpdateItems = async () => {
 		try {
-			// eslint-disable-next-line
-			const result: any = await axios.put("/inventory", {
+			await axios.put("/inventory", {
 				inventory,
 			});
-			console.log(result);
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
 	return (
-		<InventoryContext.Provider value={{ inventory, setInventory }}>
+		<InventoryContext.Provider value={{ inventory, setInventory, inventoryMap }}>
 			<div
 				style={{
 					display: "flex",

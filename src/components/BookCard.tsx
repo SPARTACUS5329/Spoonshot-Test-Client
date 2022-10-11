@@ -1,5 +1,14 @@
 import React, { useState, SetStateAction, useContext } from "react";
-import { Card, Box, CardContent, Typography, Button, Checkbox, TextField } from "@mui/material";
+import {
+	Card,
+	Box,
+	CardContent,
+	Typography,
+	Button,
+	Checkbox,
+	TextField,
+	Tooltip,
+} from "@mui/material";
 import { InventoryContext } from "../pages/Home";
 import Book from "../Interfaces/Book";
 import "../styles/Books.css";
@@ -14,10 +23,12 @@ function BookCard(props: {
 }) {
 	const {
 		inventory,
+		inventoryMap,
 		setInventory,
 	}: {
 		inventory: Book[] | null;
 		setInventory: React.Dispatch<SetStateAction<Book[] | null>> | null;
+		inventoryMap: any; // eslint-disable-line
 	} = useContext(InventoryContext);
 	const { book, setIsBookDescriptionModalOpen, setCurrentBook, showInventory } = props.props;
 	const [isSelected, setIsSelected] = useState<boolean>(false);
@@ -36,6 +47,7 @@ function BookCard(props: {
 					height: "fit-content",
 					minHeight: "350px",
 					marginLeft: "10px",
+					border: Object.hasOwn(inventoryMap, book.googleBookID) ? "2px solid gold" : "",
 				}}
 				variant="outlined">
 				<img
