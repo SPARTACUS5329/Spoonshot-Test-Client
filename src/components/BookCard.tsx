@@ -101,29 +101,6 @@ function BookCard(props: {
 									return setIsSelected(false);
 								}}
 							/>
-							<Delete
-								onClick={(e) => {
-									e.preventDefault();
-									if (isDeleted) {
-										setInventory &&
-											setInventory((inventory: Book[] | null) => {
-												if (!inventory) return null;
-												return [...inventory, book];
-											});
-										return setIsDeleted(false);
-									}
-									setInventory &&
-										setInventory((inventory: Book[] | null) => {
-											if (!inventory) return null;
-											return [
-												...inventory.filter((BOOK: Book) => {
-													return book.googleBookID !== BOOK.googleBookID;
-												}),
-											];
-										});
-									setIsDeleted(true);
-								}}
-							/>
 						</Box>
 						<Typography style={{ fontSize: "15px" }}>{book.authors[0]}</Typography>
 						<Typography className="description">{book.description}</Typography>
