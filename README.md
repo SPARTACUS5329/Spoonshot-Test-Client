@@ -11,6 +11,7 @@ Deployed version (bugs): [https://spartacus5329.github.io/Spoonshot-Test-Client/
 -   `open the provided link in the terminal`
 
 **Make sure the server is running (refer** [https://github.com/spartacus5329/Spoonshot-Test-Server](https://)**)**
+**Make sure you are connected to Wi-fi and not mobile hotspot. The Google Books API gives a CORS error on mobile hotspot**
 
 ## Functionality
 
